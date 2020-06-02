@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -32,10 +31,11 @@ namespace MyWebApi.Controllers
 
         [HttpGet]
         [Route("GetAllImages")]
-        public ActionResult GetImage(String ImageName)
+        public ActionResult GetAllImages(String ImageName)
         {
             string sql = "SELECT * FROM public.\"Image\"";
             DataTable dt = SelectData(sql);
+
             var objList = DataTableToList<Image>(dt);
 
             objList.Cast<Image>().ToList();
@@ -62,6 +62,17 @@ namespace MyWebApi.Controllers
             return Json(objList);
         }
 
+        [HttpGet]
+        [Route("ImageId/{id}")]
+        public ActionResult GetImageById(int id)
+        {
+            string sql = "SELECT * FROM public.\"Image\" WHERE \"Id\" = @id";
+            DataTable dt = SelectData(sql, "Id", id);
+
+            var objList = DataTableToList<Image>(dt);
+            objList.Cast<Image>().ToList();
+            return Json(objList);
+        }
 
 
         //get db version:

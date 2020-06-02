@@ -16,8 +16,8 @@ namespace MyWebApi.Extensions
 {
     public class ControllerExtension : Controller
     {
-        private readonly IConfiguration _config;
-        private static string cs = "User ID = SuperUser;Password=qwerty;Server=localhost;Port=5432;Database=MyWebApi.Dev;Integrated Security=true;Pooling=true";
+        protected readonly IConfiguration _config;
+        protected static string cs = "User ID = SuperUser;Password=qwerty;Server=localhost;Port=5432;Database=MyWebApi.Dev;Integrated Security=true;Pooling=true";
         static readonly NpgsqlConnection connection = new NpgsqlConnection(cs);
 
         /// <summary>
