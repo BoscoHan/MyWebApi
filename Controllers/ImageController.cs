@@ -74,6 +74,17 @@ namespace MyWebApi.Controllers
             return Json(objList);
         }
 
+        [HttpGet]
+        [Route("ImageName/{ImageName}")]
+        public ActionResult GetImageByName(string ImageName)
+        {
+            string sql = "SELECT * FROM public.\"Image\" WHERE \"ImageName\" LIKE @ImageName";
+            DataTable dt = SelectDataMatchSubStr(sql, "ImageName", ImageName);
+
+            var objList = DataTableToList<Image>(dt);
+            objList.Cast<Image>().ToList();
+            return Json(objList);
+        }
 
         //get db version:
         [HttpGet]

@@ -83,6 +83,7 @@ namespace MyWebApi.Extensions
                 catch (Exception ex)
                 {
                     Debug.WriteLine("Erro: ---> " + ex.Message);
+                    connection.Close();
                 }
 
                 connection.Close();
@@ -118,6 +119,7 @@ namespace MyWebApi.Extensions
                 catch (Exception ex)
                 {
                     Debug.WriteLine("Error: ---> " + ex.Message);
+                    connection.Close();
                 }
 
                 connection.Close();
@@ -125,6 +127,42 @@ namespace MyWebApi.Extensions
             }
         }
 
+
+        /// <summary>
+        /// Get data a DataTable from a query with params and match param
+        /// </summary>
+        /// <param name="query">Query to execute. Example: select * from sales where product like '%@prodName%'</param>
+        /// <param name="paramName">Param name. Example: "prodName"</param>
+        /// <param name="paramValue">Param value. Example: (string)fridge</param>
+        /// <returns></returns>
+        public static DataTable SelectDataMatchSubStr(string query, string paramName, object paramValue)
+        {
+            connection.Open();
+            using (var cmd = new NpgsqlCommand(query, connection))
+            {
+                //using sqlParams like this prevents sql injection:
+                cmd.Parameters.AddWithValue(paramName, "%" + paramValue + "%");
+                NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+
+                DataSet _ds = new DataSet();
+                DataTable _dt = new DataTable();
+
+                da.Fill(_ds);
+
+                try
+                {
+                    _dt = _ds.Tables[0];
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error: ---> " + ex.Message);
+                    connection.Close();
+                }
+
+                connection.Close();
+                return _dt;
+            }
+        }
 
         /// <summary>
         /// Get data a DataTable from a query with multiple params.
@@ -166,6 +204,7 @@ namespace MyWebApi.Extensions
                 catch (Exception ex)
                 {
                     Debug.WriteLine("Error: ---> " + ex.Message);
+                    connection.Close();
                 }
 
                 connection.Close();
