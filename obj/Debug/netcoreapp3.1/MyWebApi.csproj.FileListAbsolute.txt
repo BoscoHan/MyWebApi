@@ -24,8 +24,6 @@ C:\Users\bosco\GitRepos\MyWebApi\obj\Debug\netcoreapp3.1\MyWebApi.genruntimeconf
 C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\Microsoft.Bcl.HashCode.dll
 C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Abstractions.dll
-C:\Users\bosco\GitRepos\MyWebApi\obj\Debug\netcoreapp3.1\MyWebApi.csproj.CoreCompileInputs.cache
-C:\Users\bosco\GitRepos\MyWebApi\obj\Debug\netcoreapp3.1\MyWebApi.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\System.Web.Mvc.dll
 C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\System.Web.Razor.dll
 C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\System.Web.Helpers.dll
@@ -34,3 +32,16 @@ C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\System.Web.WebPages.Raz
 C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\System.Web.WebPages.dll
 C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\Microsoft.Web.Infrastructure.dll
 C:\Users\bosco\GitRepos\MyWebApi\obj\Debug\netcoreapp3.1\MyWebApi.csprojAssemblyReference.cache
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\System.Data.SqlClient.dll
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\runtimes\win-arm64\native\sni.dll
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\sni.dll
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\sni.dll
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\bosco\GitRepos\MyWebApi\obj\Debug\netcoreapp3.1\MyWebApi.csproj.CoreCompileInputs.cache
+C:\Users\bosco\GitRepos\MyWebApi\obj\Debug\netcoreapp3.1\MyWebApi.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\System.Net.Http.Formatting.dll
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\System.Web.Http.dll
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\Newtonsoft.Json.Bson.dll
+C:\Users\bosco\GitRepos\MyWebApi\bin\Debug\netcoreapp3.1\Npgsql.Json.NET.dll

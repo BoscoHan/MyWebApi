@@ -10,6 +10,7 @@ namespace MyWebApi.Models
     {
         public MyWebApiContext(DbContextOptions<MyWebApiContext> options) : base(options) { }
 
-        public DbSet<Image> Image { get; set; } 
+        public DbSet<Image> Image { get; set; }
+        public DbSet<User> User { get; set; }
     }
 }
