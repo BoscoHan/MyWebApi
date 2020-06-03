@@ -28,4 +28,9 @@ namespace MyWebApi.Models
     {
         public string Path { get; set; }
     }
+
+    public class UpdateImageUserModel : InsertImageModel
+    {
+        public int CurrentUserId { get; set; }
+    }
 }

@@ -247,8 +247,9 @@ namespace MyWebApi.Extensions
             return success;
         }
 
+
         //would be nice to wrap in transaction, when multiple instances co-exist:
-        public Boolean ExecuteDeleteImage(string deleteQuery, UpdateImageUserModel imageUserModel)
+        public Boolean ExecuteDeleteImage(string deleteQuery, DeleteImageUserModel imageUserModel)
         {
             bool success = true;
             //NpgsqlTransaction transaction = null;
@@ -297,6 +298,71 @@ namespace MyWebApi.Extensions
                 }
             }
             //transaction.Commit();
+            connection.Close();
+            return success;
+        }
+
+        //should refactor to avoid duplicate code
+        public  Boolean ExecuteUpdateImage(string updateQuery, UpdateImageUserModel imageUserModel)
+        {
+            bool success = true;
+            //NpgsqlTransaction transaction = null;
+
+            //first fetch the table to see owner and permissions:
+            string selectSql = "SELECT * FROM public.\"Image\" WHERE \"Id\" = @id";
+
+            //transaction = connection.BeginTransaction();
+            DataTable dt = SelectData(selectSql, "Id", imageUserModel.Id);
+            var objList = DataTableToList<Image>(dt);
+            objList.Cast<Image>().ToList();
+
+            if (!objList.Any())
+            {
+                Console.WriteLine("Image cannot be deleted as it does not exist");
+                //transaction.Rollback();
+                return false;
+            }
+
+            var previousRecord = objList[0];
+
+            if (previousRecord.Isprivate && imageUserModel.CurrentUserId != previousRecord.UserId)
+            {
+                //users that aren't owners shouldn't be able to modify these fields:
+                if (previousRecord.Isprivate != imageUserModel.Isprivate || 
+                    previousRecord.Price != imageUserModel.Price ||
+                    previousRecord.ImageName != imageUserModel.ImageName)                
+                {
+                    Console.WriteLine("Image cannot be modified as the current user does not have rights to modify!");
+                    //transaction.Rollback();
+                    return false;
+                }
+            }
+
+            connection.Open();
+            using (var cmd = new NpgsqlCommand(updateQuery, connection))
+            {
+                try
+                {
+                    cmd.Parameters.AddWithValue("ImageId", imageUserModel.Id);
+                    cmd.Parameters.AddWithValue("ImageName", imageUserModel.ImageName);
+                    cmd.Parameters.AddWithValue("Description", imageUserModel.Description);
+                    cmd.Parameters.AddWithValue("price", imageUserModel.Price);
+                    cmd.Parameters.AddWithValue("quantity", imageUserModel.Quantity);
+                    cmd.Parameters.AddWithValue("IsPrivate", imageUserModel.Isprivate);
+                    cmd.Parameters.AddWithValue("ImgByte", imageUserModel.ImgByte);
+
+                    int result = cmd.ExecuteNonQuery();
+
+                    if (result < 0)
+                        success = false;
+                }
+                catch (SqlException e)
+                {
+                    Console.WriteLine("SqlException caught " + e);
+                }
+            }
+            //transaction.Commit();
+            connection.Close();
             return success;
         }
     }

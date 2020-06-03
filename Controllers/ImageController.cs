@@ -84,7 +84,7 @@ namespace MyWebApi.Controllers
 
         [HttpPost]
         [Route("DeleteImage")]
-        public IActionResult DeleteImage(UpdateImageUserModel imageModel)
+        public IActionResult DeleteImage(DeleteImageUserModel imageModel)
         {
             string sql = "DELETE FROM public.\"Image\" WHERE \"Id\" = @ImageId";
 
@@ -106,6 +106,22 @@ namespace MyWebApi.Controllers
             imageModel.ImgByte = filebytes;
 
             return ExecuteInsertImage(query, imageModel) == true ? Json(HttpStatusCode.OK) : Json(HttpStatusCode.BadRequest);
+        }
+
+        [HttpPut]
+        [Route("UpdateImage")]
+        public IActionResult UpdateImage(UpdateImageUserModel imageModel)
+        {
+            string updateQuery = "UPDATE public.\"Image\" SET \"ImageName\" = @ImageName, \"Description\" = @Description, \"Price\" = @price, \"Quantity\" = @quantity, \"Isprivate\" = @IsPrivate, \"ImgByte\" = @ImgByte WHERE \"Id\" = @ImageId";
+
+            ImageService service = new ImageService();
+            if (imageModel.Path != null)
+            {
+                byte[] filebytes = service.ReadAllBytes(imageModel.Path);
+                imageModel.ImgByte = filebytes;
+            }
+
+            return ExecuteUpdateImage(updateQuery, imageModel) == true ? Json(HttpStatusCode.OK) : Json(HttpStatusCode.BadRequest);
         }
 
         //get db version:

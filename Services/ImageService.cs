@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Runtime.Intrinsics.X86;
+using MyWebApi.Models;
 
 namespace MyWebApi.Services
 {

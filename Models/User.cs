@@ -17,7 +17,7 @@ namespace MyWebApi.Models
         public string Email { get; set; }
     }
 
-    public class UpdateImageUserModel : User
+    public class DeleteImageUserModel : User
     {
         public int ImageId { get; set; }
     }
