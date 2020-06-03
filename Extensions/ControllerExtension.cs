@@ -5,12 +5,12 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Reflection;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MyWebApi.Models;
 using Npgsql;
 using NpgsqlTypes;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace MyWebApi.Extensions
 {
@@ -100,7 +100,9 @@ namespace MyWebApi.Extensions
         /// <returns></returns>
         public static DataTable SelectData(string query, string paramName, object paramValue)
         {
+
             connection.Open();
+
             using (var cmd = new NpgsqlCommand(query, connection))
             {
                 cmd.Parameters.AddWithValue(paramName, paramValue);
@@ -210,6 +212,92 @@ namespace MyWebApi.Extensions
                 connection.Close();
                 return _dt;
             }
+        }
+
+
+        //execute with ExecuteNonQuery() method, 
+        //args: SQL query and list of params
+        public Boolean ExecuteInsertImage(string query, InsertImageModel imageModel)
+        {
+            connection.Open();
+            bool success = true;
+            using (var cmd = new NpgsqlCommand(query, connection))
+            {
+                try
+                {
+                    cmd.Parameters.AddWithValue("ImageName", imageModel.ImageName);
+                    cmd.Parameters.AddWithValue("Description", imageModel.Description);
+                    cmd.Parameters.AddWithValue("price", imageModel.Price);
+                    cmd.Parameters.AddWithValue("quantity", imageModel.Quantity);
+                    cmd.Parameters.AddWithValue("IsPrivate", imageModel.Isprivate);
+                    cmd.Parameters.AddWithValue("UserId", imageModel.UserId);
+                    cmd.Parameters.AddWithValue("ImgByte", imageModel.ImgByte);
+
+                    int result = cmd.ExecuteNonQuery();
+                    //nothing inserted, something went wrong
+                    if (result < 0)
+                        success = false;
+                }
+                catch (SqlException e)
+                {
+                    Console.WriteLine("SqlException caught " + e);
+                }
+            }
+            connection.Close();
+            return success;
+        }
+
+        //would be nice to wrap in transaction, when multiple instances co-exist:
+        public Boolean ExecuteDeleteImage(string deleteQuery, UpdateImageUserModel imageUserModel)
+        {
+            bool success = true;
+            //NpgsqlTransaction transaction = null;
+
+            //first fetch the table to see owner and permissions:
+            string selectSql = "SELECT * FROM public.\"Image\" WHERE \"Id\" = @id";
+
+            //transaction = connection.BeginTransaction();
+            DataTable dt = SelectData(selectSql, "Id", imageUserModel.ImageId);
+            var objList = DataTableToList<Image>(dt);
+            objList.Cast<Image>().ToList();
+            
+            if (!objList.Any())
+            {
+                Console.WriteLine("Image cannot be deleted as it does not exist");
+                //transaction.Rollback();
+                return false;
+            }
+
+            int OwnerId = objList[0].UserId;
+            var isPrivate = objList[0].Isprivate;
+
+            if (isPrivate && imageUserModel.UserId != OwnerId)
+            {
+                Console.WriteLine("Image cannot be deleted as the current user does not have rights to modify!");
+                //transaction.Rollback();
+                return false;
+            }
+
+            //images not marked private could be modified by anyone:
+
+            connection.Open();
+            using (var cmd = new NpgsqlCommand(deleteQuery, connection))
+            {
+                try 
+                {
+                    cmd.Parameters.AddWithValue("ImageId", imageUserModel.ImageId);
+                    int result = cmd.ExecuteNonQuery();
+
+                    if (result < 0)
+                        success = false;
+                }
+                catch (SqlException e)
+                {
+                    Console.WriteLine("SqlException caught " + e);
+                }
+            }
+            //transaction.Commit();
+            return success;
         }
     }
 }

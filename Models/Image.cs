@@ -13,8 +13,19 @@ namespace MyWebApi.Models
 
         public double Price { get; set; }
 
-        public int quantity { get; set; }
+        public int Quantity { get; set; }
 
+        public bool Isprivate { get; set; }
+
+        //FK for user:
+        //Attached file must have user attached, easier to sort out permissions
+        public int UserId { get; set; }
+        public User User { get; set; }
         public byte[] ImgByte { get; set; }
+    }
+
+    public class InsertImageModel : Image
+    {
+        public string Path { get; set; }
     }
 }

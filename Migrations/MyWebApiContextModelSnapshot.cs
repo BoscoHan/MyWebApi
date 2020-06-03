@@ -35,20 +35,28 @@ namespace MyWebApi.Migrations
                     b.Property<byte[]>("ImgByte")
                         .HasColumnType("bytea");
 
+                    b.Property<bool>("Isprivate")
+                        .HasColumnType("boolean");
+
                     b.Property<double>("Price")
                         .HasColumnType("double precision");
 
-                    b.Property<int>("quantity")
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Image");
                 });
 
             modelBuilder.Entity("MyWebApi.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
@@ -59,9 +67,18 @@ namespace MyWebApi.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("MyWebApi.Models.Image", b =>
+                {
+                    b.HasOne("MyWebApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

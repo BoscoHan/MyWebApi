@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyWebApi.Extensions;
 using MyWebApi.Models;
+using MyWebApi.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Npgsql;
 using NpgsqlTypes;
 
@@ -39,26 +43,6 @@ namespace MyWebApi.Controllers
             var objList = DataTableToList<Image>(dt);
 
             objList.Cast<Image>().ToList();
-            //connection.Open();
-            //connection.TypeMapper.UseJsonNet();
-
-            //string sql = "SELECT * FROM public.\"Image\"";
-
-            //var cmd = new NpgsqlCommand(sql, connection);
-            ////cmd.Parameters.AddWithValue("@ImageName", ImageName);
-
-            //NpgsqlDataReader dr = cmd.ExecuteReader();
-            //StringBuilder sb = new StringBuilder();
-            //while (dr.Read())
-            //{
-            //    Image image = new Image();
-            //    image.Id = (int)dr["Id"];
-            //    image.ImageName = (string)dr["ImageName"];
-            //    image.Description = (string)dr["Description"];
-            //    sb.Append(dr[1]);
-            //}
-
-            //connection.Close();
             return Json(objList);
         }
 
@@ -84,6 +68,44 @@ namespace MyWebApi.Controllers
             var objList = DataTableToList<Image>(dt);
             objList.Cast<Image>().ToList();
             return Json(objList);
+        }
+
+        [HttpGet]
+        [Route("ImageDescription/{Description}")]
+        public ActionResult GetImageByDescription(string Description)
+        {
+            string sql = "SELECT * FROM public.\"Image\" WHERE \"Description\" LIKE @Description";
+            DataTable dt = SelectDataMatchSubStr(sql, "Description", Description);
+
+            var objList = DataTableToList<Image>(dt);
+            objList.Cast<Image>().ToList();
+            return Json(objList);
+        }
+
+        [HttpPost]
+        [Route("DeleteImage")]
+        public IActionResult DeleteImage(UpdateImageUserModel imageModel)
+        {
+            string sql = "DELETE FROM public.\"Image\" WHERE \"Id\" = @ImageId";
+
+            return ExecuteDeleteImage(sql, imageModel) == true ? Json(HttpStatusCode.OK) : Json(HttpStatusCode.BadRequest);
+        }
+
+        [HttpPost]
+        [Route("InsertImage")]
+        public IActionResult InsertImage(InsertImageModel imageModel)
+        {
+            //could ideally use LINQ or other ORM library, or even move this to XML level to clean it up.
+            //just avoid sql injection by parameterizing for now: 
+            string query = "INSERT INTO public.\"Image\"(\"ImageName\", \"Description\", \"Price\", \"Quantity\", \"Isprivate\", \"UserId\", \"ImgByte\") " +
+                "VALUES(@ImageName, @Description, @price, @quantity, @IsPrivate, @UserId, @ImgByte); ";
+
+            //read the file to bytes 
+            ImageService service = new ImageService();
+            byte[] filebytes = service.ReadAllBytes(imageModel.Path);
+            imageModel.ImgByte = filebytes;
+
+            return ExecuteInsertImage(query, imageModel) == true ? Json(HttpStatusCode.OK) : Json(HttpStatusCode.BadRequest);
         }
 
         //get db version:
