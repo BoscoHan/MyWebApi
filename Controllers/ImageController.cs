@@ -70,6 +70,19 @@ namespace MyWebApi.Controllers
             return Json(objList);
         }
 
+
+        [HttpGet]
+        [Route("ImageByUserId/{UserId}")]
+        public ActionResult GetImageAssociatedWithUser(int UserId)
+        {
+            string sql = "SELECT * FROM public.\"Image\" WHERE \"UserId\" = @UserId";
+            DataTable dt = SelectData(sql, "UserId", UserId);
+
+            var objList = DataTableToList<Image>(dt);
+            objList.Cast<Image>().ToList();
+            return Json(objList);
+        }
+
         [HttpGet]
         [Route("ImageDescription/{Description}")]
         public ActionResult GetImageByDescription(string Description)
@@ -86,6 +99,9 @@ namespace MyWebApi.Controllers
         [Route("DeleteImage")]
         public IActionResult DeleteImage(DeleteImageUserModel imageModel)
         {
+            if (imageModel == null)
+                throw new ArgumentException("invalid imageModel");
+
             string sql = "DELETE FROM public.\"Image\" WHERE \"Id\" = @ImageId";
 
             return ExecuteDeleteImage(sql, imageModel) == true ? Json(HttpStatusCode.OK) : Json(HttpStatusCode.BadRequest);

@@ -140,6 +140,8 @@ namespace MyWebApi.Extensions
             connection.Open();
             using (var cmd = new NpgsqlCommand(query, connection))
             {
+                cmd.Parameters.AddWithValue(paramName, "%" + paramValue + "%");
+                
                 //using sqlParams like this prevents sql injection:
                 cmd.Parameters.AddWithValue(paramName, "%" + paramValue + "%");
                 NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
@@ -305,7 +307,7 @@ namespace MyWebApi.Extensions
 
         //should refactor to avoid duplicate code
         // surround with transaction
-        public  Boolean ExecuteUpdateImage(string updateQuery, UpdateImageUserModel imageUserModel)
+        public Boolean ExecuteUpdateImage(string updateQuery, UpdateImageUserModel imageUserModel)
         {
             bool success = true;
             //NpgsqlTransaction transaction = null;
