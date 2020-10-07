@@ -9,15 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MyWebApi.Models;
 using Npgsql;
-using NpgsqlTypes;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace MyWebApi.Extensions
 {
     public class ControllerExtension : Controller
     {
         protected readonly IConfiguration _config;
-        protected static string cs = "User ID = SuperUser;Password=qwerty;Server=localhost;Port=5432;Database=MyWebApi.Dev;Integrated Security=true;Pooling=true";
+        protected readonly static string cs = "User ID = SuperUser;Password=qwerty;Server=localhost;Port=5432;Database=MyWebApi.Dev;Integrated Security=true;Pooling=true";
         static readonly NpgsqlConnection connection = new NpgsqlConnection(cs);
 
         /// <summary>
@@ -172,7 +170,7 @@ namespace MyWebApi.Extensions
         /// <param name="query">Query to execute. Example: select * from sales where product = @prodId and sale_date = @date</param>
         /// <param name="paramName">Param name. Example: []{"prodId". "qtd"}</param>
         /// <param name="paramValue">Param value. Example: []{(int)15,(DateTime)"2017-01-01"}</param>
-        /// <returns></returns>
+        /// <returns>DataTable object with populated data</returns>
         public static DataTable SelectData(string query, string[] paramName, object[] paramValue)
         {
             connection.Open();
@@ -215,8 +213,12 @@ namespace MyWebApi.Extensions
         }
 
 
-        //execute with ExecuteNonQuery() method, 
-        //args: SQL query and list of params
+        /// <summary>
+        /// execute with ExecuteNonQuery() method.
+        /// </summary>
+        /// <param name="query">Query to execute. Example: INSERT INTO public.\"Image\"(\"ImageName\", \"Description\", \"Price\", \"Quantity\", \"Isprivate\", \"UserId\", \"ImgByte\") " + "VALUES(@ImageName, @Description, @price, @quantity, @IsPrivate, @UserId, @ImgByte); </param>
+        /// <param name="imageModel">Param name. Example: []{"prodId". "qtd"}</param>
+        /// <returns> return true if successful insertion </returns>
         public Boolean ExecuteInsertImage(string query, InsertImageModel imageModel)
         {
             connection.Open();
@@ -272,14 +274,13 @@ namespace MyWebApi.Extensions
             int OwnerId = objList[0].UserId;
             var isPrivate = objList[0].Isprivate;
 
+            //images not marked private could be modified by anyone, else check for user modifying
             if (isPrivate && imageUserModel.UserId != OwnerId)
             {
                 Console.WriteLine("Image cannot be deleted as the current user does not have rights to modify!");
                 //transaction.Rollback();
                 return false;
-            }
-
-            //images not marked private could be modified by anyone:
+            }         
 
             connection.Open();
             using (var cmd = new NpgsqlCommand(deleteQuery, connection))
@@ -303,6 +304,7 @@ namespace MyWebApi.Extensions
         }
 
         //should refactor to avoid duplicate code
+        // surround with transaction
         public  Boolean ExecuteUpdateImage(string updateQuery, UpdateImageUserModel imageUserModel)
         {
             bool success = true;
